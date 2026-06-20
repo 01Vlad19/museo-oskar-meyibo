@@ -1,0 +1,926 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Museo de Arte · Galería</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap');
+
+    :root {
+      --negro:      #0a0a0a;
+      --carbon:     #141414;
+      --gris-1:     #1e1e1e;
+      --gris-2:     #2e2e2e;
+      --gris-muted: #888;
+      --blanco:     #f5f2ec;
+      --dorado:     #c9a96e;
+      --fuente-display: 'Cormorant Garamond', Georgia, serif;
+      --fuente-body:    'Inter', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--negro);
+      color: var(--blanco);
+      font-family: var(--fuente-body);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Navegación ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .nav-logo {
+      font-family: var(--fuente-display);
+      font-size: 1.2rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dorado);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--blanco); }
+
+    /* Link activo — resalta la página actual */
+    .nav-links a.activo { color: var(--dorado); }
+
+    /* Botón regresar */
+    .nav-regresar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gris-2);
+    }
+
+    .nav-regresar:hover {
+      color: var(--dorado);
+      border-color: var(--dorado);
+    }
+
+    .nav-regresar::before { content: '←'; font-size: 1rem; }
+
+    /* ── Encabezado de la galería ── */
+    .galeria-header {
+      padding: 9rem 3rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .galeria-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px);
+    }
+
+    .galeria-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .galeria-titulo {
+      font-family: var(--fuente-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 300;
+      color: var(--blanco);
+      position: relative;
+      z-index: 1;
+      line-height: 1.1;
+    }
+
+    .galeria-titulo em {
+      font-style: italic;
+      color: var(--dorado);
+    }
+
+    .galeria-subtitulo {
+      margin-top: 1rem;
+      font-size: 0.88rem;
+      color: var(--gris-muted);
+      font-weight: 300;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Filtros ── */
+    .filtros {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2.5rem 3rem;
+      flex-wrap: wrap;
+    }
+
+    .filtro-btn {
+      padding: 0.5rem 1.4rem;
+      border: 1px solid var(--gris-2);
+      background: transparent;
+      color: var(--gris-muted);
+      font-family: var(--fuente-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filtro-btn:hover,
+    .filtro-btn.activo {
+      border-color: var(--dorado);
+      color: var(--dorado);
+    }
+
+    /* ── Grid de obras ── */
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 0 3rem 6rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Algunas tarjetas más grandes para romper la monotonía */
+    .obra-card { position: relative; overflow: hidden; border: 1px solid var(--gris-2); cursor: pointer; background: var(--gris-1); }
+    .obra-card.grande { grid-row: span 2; }
+
+    .obra-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease, filter 0.6s ease;
+      filter: grayscale(25%);
+    }
+
+    .obra-card.grande img { height: 100%; min-height: 580px; }
+
+    .obra-card:hover img {
+      transform: scale(1.04);
+      filter: grayscale(0%);
+    }
+
+    .obra-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.5rem;
+      background: linear-gradient(transparent, rgba(0,0,0,0.88));
+      transform: translateY(15%);
+      transition: transform 0.4s ease;
+    }
+
+    .obra-card:hover .obra-info { transform: translateY(0); }
+
+    .obra-numero {
+      font-size: 0.62rem;
+      color: var(--dorado);
+      letter-spacing: 0.2em;
+      margin-bottom: 0.4rem;
+    }
+
+    .obra-titulo {
+      font-family: var(--fuente-display);
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--blanco);
+    }
+
+    .obra-meta {
+      font-size: 0.72rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.08em;
+      margin-top: 0.3rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem;
+      background: var(--negro);
+      border-top: 1px solid var(--gris-2);
+      font-size: 0.75rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <span class="nav-logo">Museo &middot; OskarMeyibo</span>
+    <ul class="nav-links">
+      <li><a href="galeria.html">Galería</a></li>
+      <li><a href="coleccion.html">Colección</a></li>
+      <li><a href="acerca.html">BIOGRAFÍA</a></li>
+        <li><a href="index.html" class="nav-regresar">Inicio</a></li>
+    </ul>
+  </nav>
+
+  <!-- ENCABEZADO -->
+  <header class="galeria-header">
+    <p class="galeria-eyebrow">Colección completa</p>
+    <h1 class="galeria-titulo">Galería</em></h1>
+    <p class="galeria-subtitulo">Explora todas las obras de la colección</p>
+    <div class="galeria-divider"></div>
+  </header>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <button class="filtro-btn activo" onclick="filtrar(this, 'todo')">Todas</button>
+    <button class="filtro-btn" onclick="filtrar(this, 'Aerografía')">Aerografía</button>
+    <button class="filtro-btn" onclick="filtrar(this, 'pintura')">Pintura Gestual</button>
+    <button class="filtro-btn" onclick="filtrar(this, 'escultura')">Esculturas</button>
+  </div>
+
+  <!-- GRID DE OBRAS -->
+  <main class="galeria-grid" id="grid">
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/I.jpeg" alt="Eternidad de Lavanda"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Eternidad de Lavanda</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+        <div class="obra-card" data-categoria="escultura">
+      <img src="img/II.jpeg" alt="El Santuario Olvidado"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Santuario Olvidado</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="escultura">
+      <img src="img/III.jpeg" alt="El Eco del Manantial"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Eco del Manantial</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/iv.jpeg" alt="El Vuelo de la Amatista"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Vuelo de la Amatista</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="escultura">
+      <img src="img/V.jpeg" alt="Tejedores de Quimeras"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Tejedores de Quimeras</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/VI.jpeg" alt="El Guardián de la Penumbra"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián de la Penumbra</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/VII.jpeg" alt="El Centinela del Sueño"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Centinela del Sueño</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/VIII.jpeg" alt="El Latido del Otoño"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Latido del Otoño</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/IX.jpeg" alt="El Guardián Eterno"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián Eterno</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/X.jpeg" alt="La Estrella de la Calma"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Estrella de la Calma</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="escultura">
+      <img src="img/XI.jpeg" alt="El Despertar de la Alborada"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Despertar de la Alborada</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O2.jpeg" alt="Oasis en la Ribera"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Oasis en la Ribera</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O3.jpeg" alt="Furia de la Marea"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Furia de la Marea</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O4.jpeg" alt="Vuelo en el Ocaso Dorado"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Vuelo en el Ocaso Dorado</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O5.jpeg" alt="El Embrujo de la Marea Lunar"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Embrujo de la Marea Lunar</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O6.jpeg" alt="El Desfiladero de las Almas"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Desfiladero de las Almas</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O7.jpeg" alt="La Esencia Consumida"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Esencia Consumida</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O14.jpeg" alt="Frescura Compartida"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Frescura Compartida</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/O16.jpeg" alt="Añoranza del Pueblo Firme"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Añoranza del Pueblo Firme</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/1.jpeg" alt="El Universo en Miniatura"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Universo en Miniatura</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+   
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/2.jpeg" alt="Ventanas a la Inmensidad"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Ventanas a la Inmensidad</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/3.jpeg" alt="Mundos en un Destello"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Mundos en un Destello</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/4.jpeg" alt="Susurro de la Montaña"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Susurro de la Montaña</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/5.jpeg" alt="El Canto de la Cascada"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Canto de la Cascada</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/6.jpeg" alt="El Eco de la Creación"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Eco de la Creación</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/7.jpeg" alt="Retazos del Infinito"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Retazos del Infinito</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card" data-categoria="pintura">
+      <img src="img/8.jpeg" alt="Horizontes Compartidos"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Horizontes Compartidos</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+
+    
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/9.jpeg" alt="La Galería del Viento"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Galería del Viento</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/10.jpeg" alt="La Cima del Silenci"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Cima del Silencio</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/11.jpeg" alt="El Abrazo del Bosque"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Abrazo del Bosque</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/12.jpeg" alt="Crepúsculo en el Desierto"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Crepúsculo en el Desierto</p>
+        <p class="obra-meta">OskarMeyibo</p>  
+      </div>
+    </div>
+
+    </div>    <div class="obra-card" data-categoria="pintura">
+      <img src="img/13.jpeg" alt="Jade, el laberinto de un sueño"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Jade, el laberinto de un sueño</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/uno.jpeg" alt="El Vuelo del Espíritu Helado"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Vuelo del Espíritu Helado</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/dos.jpeg" alt="El Despertar del Sentido"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Despertar del Sentido</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/tres.jpeg" alt="El Guardián del Tótem"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián del Tótem</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/cuatro.jpeg" alt="La Cuna Cósmica"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Cuna Cósmica</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <!-- LAS NUEVAS VAN APARTIR DE AQUI -->
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O1.jpeg" alt="El Grito del Silencio Intermitente"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Grito del Silencio Intermitente</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O8.jpeg" alt="La Ascensión del Pensamiento"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Ascensión del Pensamiento</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O9.jpeg" alt="Génesis del Cosmos Interior"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Génesis del Cosmos Interior</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O11.jpeg" alt="El Ofrecimiento del Silencio"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Ofrecimiento del Silencio</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O12.jpeg" alt="Caminata bajo el Ocaso de la Sabana"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Caminata bajo el Ocaso de la Sabana</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O15.jpeg" alt="Silueta de la Naturaleza Sutil"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Silueta de la Naturaleza Sutil</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O17.jpeg" alt="El Caballero de la Mancha Eterna"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Caballero de la Mancha Eterna</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O18.jpeg" alt="Metamorfosis del Instinto"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Metamorfosis del Instinto</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O19.jpeg" alt="La Ofrenda de la Luna Lunae"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Ofrenda de la Luna Lunae</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O20.jpeg" alt="La Encrucijada de las Miradas"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Encrucijada de las Miradas</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O21.jpeg" alt="El Vuelo del Pensamiento Verde"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Vuelo del Pensamiento Verde</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/O22.jpeg" alt="El Clamor del Silencio Oculto"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Clamor del Silencio Oculto</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+    <!-- LAS NUEVAS VAN APARTIR DE AQUI -->
+
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A1.jpeg" alt="El Despertar de la Consciencia Creativa"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Despertar de la Consciencia Creativa</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A2.jpeg" alt="Misticismo Nocturno Felino"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Misticismo Nocturno Felino</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A3.jpeg" alt="Eco del Páramo Herido"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Eco del Páramo Herido</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A4.jpeg" alt="El Guardián del Cosmos Ancestral"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián del Cosmos Ancestral</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A5.jpeg" alt="La Dualidad de la Mente Abierta"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Dualidad de la Mente Abierta</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A6.jpeg" alt="El Guardián del Umbral Dorado"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián del Umbral Dorado</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A7.jpeg" alt="Danza Telúrica en el Caos"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Danza Telúrica en el Caos</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A8.jpeg" alt="Éxodo bajo la Tormenta Geométrica"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Éxodo bajo la Tormenta Geométrica</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card" data-categoria="Aerografía">
+      <img src="img/A9.jpeg" alt="El Tormento de las Sombras Carmesí"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Tormento de las Sombras Carmesí</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A10.jpeg" alt="El Eco del Dolor Suspendido"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Eco del Dolor Suspendido</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A11.jpeg" alt="El Rostro del Tiempo Fragmentado"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Rostro del Tiempo Fragmentado</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card" data-categoria="Aerografía">
+      <img src="img/A12.jpeg" alt="El Eco de la Mirada Feroz"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Eco de la Mirada Feroz</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+    <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A13.jpeg" alt="La Eclosión de las Sombras Vividas"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Eclosión de las Sombras Vividas</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A14.jpeg" alt="Misticismo del Desierto"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Misticismo del Desierto</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A16.jpeg" alt="La Danza de las Almas Sutiles"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Danza de las Almas Sutiles</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A17.jpeg" alt="La Metamorfosis de las Almas Libres"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Metamorfosis de las Almas Libres</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A18.jpeg" alt="El Guardián de la Luz Cromática"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián de la Luz Cromática</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A19.jpeg" alt="El Guardián del Multiverso Cósmico"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Guardián del Multiverso Cósmico</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A20.jpeg" alt="Ecos del Cosmos Psicodélico"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">Ecos del Cosmos Psicodélico</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A21.jpeg" alt="El Despertar de la Conciencia Terrenal"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">El Despertar de la Conciencia Terrenal</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+        <div class="obra-card grande" data-categoria="Aerografía">
+      <img src="img/A22.jpeg" alt="La Quimera de las Sombras Errantes"/ class="lightbox-img">
+      <div class="obra-info">
+        <p class="obra-titulo">La Quimera de las Sombras Errantes</p>
+        <p class="obra-meta">OskarMeyibo</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>Museo de Arte · Oskar Meyibo &nbsp;·&nbsp; Todos los derechos reservados &nbsp;·&nbsp; 2026</p>
+  <p style="margin-top:0.5rem; font-size:0.65rem; opacity:0.6;">
+  Las obras, imágenes y contenido de este sitio son propiedad intelectual 
+  de los herederos de Juan Carlos González Trinidad (Oskar Meyibo). 
+  Queda prohibida su reproducción, distribución o uso comercial 
+  sin autorización expresa.
+</p>
+  </footer>
+
+  <script>
+    // Filtrar obras por categoría
+    function filtrar(boton, categoria) {
+      // Actualiza qué botón está activo
+      document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+      boton.classList.add('activo');
+
+      // Muestra u oculta tarjetas
+      document.querySelectorAll('.obra-card').forEach(card => {
+        const mostrar = categoria === 'todo' || card.dataset.categoria === categoria;
+        card.style.display = mostrar ? 'block' : 'none';
+      });
+    }
+  </script>
+
+
+ <script src="js/lightbox.js"></script>
+
+</body>
+</html>

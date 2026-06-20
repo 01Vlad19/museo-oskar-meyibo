@@ -1,0 +1,1203 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Museo de Arte · Colección</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap');
+
+    :root {
+      --negro:      #0a0a0a;
+      --carbon:     #141414;
+      --gris-1:     #1e1e1e;
+      --gris-2:     #2e2e2e;
+      --gris-muted: #888;
+      --blanco:     #f5f2ec;
+      --dorado:     #c9a96e;
+      --fuente-display: 'Cormorant Garamond', Georgia, serif;
+      --fuente-body:    'Inter', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--negro);
+      color: var(--blanco);
+      font-family: var(--fuente-body);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(10,10,10,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .nav-logo {
+      font-family: var(--fuente-display);
+      font-size: 1.2rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--blanco); }
+    .nav-links a.activo { color: var(--dorado); }
+
+    .nav-regresar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gris-2);
+    }
+
+    .nav-regresar:hover { color: var(--dorado); border-color: var(--dorado); }
+    .nav-regresar::before { content: '←'; font-size: 1rem; }
+
+    /* ── Encabezado ── */
+    .coleccion-header {
+      padding: 9rem 3rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .coleccion-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.02) 80px);
+    }
+
+    .coleccion-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .coleccion-titulo {
+      font-family: var(--fuente-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 300;
+      color: var(--blanco);
+      line-height: 1.1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .coleccion-titulo em {
+      font-style: italic;
+      color: var(--dorado);
+    }
+
+    .coleccion-subtitulo {
+      margin-top: 1rem;
+      font-size: 0.88rem;
+      color: var(--gris-muted);
+      font-weight: 300;
+      position: relative;
+      z-index: 1;
+    }
+
+    .coleccion-divider {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--dorado), transparent);
+      margin: 2rem auto 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Obras alternadas ── */
+    .obras-wrap {
+      padding: 4rem 0 6rem;
+    }
+
+    /* Cada obra ocupa toda la pantalla de ancho */
+    .obra {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 600px;
+      border-top: 1px solid var(--gris-2);
+    }
+
+    /* Numeración de obra */
+    .obra-numero {
+      font-family: var(--fuente-display);
+      font-size: 5rem;
+      font-weight: 300;
+      color: var(--dorado);
+      opacity: 0.12;
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Columna de imagen */
+    .obra-imagen {
+      position: relative;
+      overflow: hidden;
+      background: var(--gris-1);
+    }
+
+    .obra-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(15%);
+      transition: transform 0.7s ease, filter 0.7s ease;
+      cursor: zoom-in;
+    }
+
+    .obra-imagen:hover img {
+      transform: scale(1.03);
+      filter: grayscale(0%);
+    }
+
+    /* Columna de texto */
+    .obra-texto {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 5rem;
+      background: var(--carbon);
+      position: relative;
+    }
+
+    /* Alterna: par → imagen izquierda, texto derecha */
+    /* impar → texto izquierda, imagen derecha         */
+    .obra:nth-child(even) .obra-imagen { order: 2; }
+    .obra:nth-child(even) .obra-texto  { order: 1; }
+
+    .obra-eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1.2rem;
+    }
+
+    .obra-titulo {
+      font-family: var(--fuente-display);
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 300;
+      color: var(--blanco);
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .obra-titulo em {
+      font-style: italic;
+      color: var(--dorado);
+    }
+
+    .obra-año {
+      font-size: 0.75rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.2em;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .obra-descripcion {
+      font-size: 0.95rem;
+      color: var(--gris-muted);
+      line-height: 1.9;
+      margin-bottom: 1.5rem;
+      max-width: 52ch;
+    }
+
+    .obra-significado-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 0.6rem;
+    }
+
+    .obra-significado {
+      font-family: var(--fuente-display);
+      font-size: 1.15rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--blanco);
+      line-height: 1.6;
+      padding-left: 1.2rem;
+      border-left: 2px solid var(--dorado);
+    }
+
+    .obra-tecnica {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .obra-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gris-muted);
+      border: 1px solid var(--gris-2);
+      padding: 0.35rem 0.8rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem;
+      background: var(--negro);
+      border-top: 1px solid var(--gris-2);
+      font-size: 0.75rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1rem; }
+
+      .obra {
+        grid-template-columns: 1fr;
+        min-height: unset;
+      }
+
+      .obra:nth-child(even) .obra-imagen { order: 1; }
+      .obra:nth-child(even) .obra-texto  { order: 2; }
+
+      .obra-imagen { height: 300px; }
+      .obra-texto  { padding: 3rem 1.5rem; }
+      .obra-numero { font-size: 3rem; }
+    }
+
+        .btn-leer {
+        margin-top: 1.5rem;
+        background: transparent;
+        border: 1px solid var(--dorado);
+        color: var(--dorado);
+        padding: 0.8rem 1.2rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        transition: 0.3s;
+        }
+
+        .btn-leer:hover {
+        background: var(--dorado);
+        color: var(--negro);
+        }
+
+        .btn-detener {
+        margin-top: 1.5rem;
+        background: transparent;
+        border: 1px solid var(--dorado);
+        color: var(--dorado);
+        padding: 0.8rem 1.2rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        transition: 0.3s;
+        }
+
+        .btn-detener:hover {
+        background: var(--dorado);
+        color: var(--negro);
+        }
+
+
+
+  </style>
+</head>
+<body>
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <span class="nav-logo">Museo &middot; OskarMeyibo</span>
+    <ul class="nav-links">
+      <li><a href="galeria.html">Galería</a></li>
+      <li><a href="coleccion.html" class="activo">Colección</a></li>
+      <li><a href="acerca.html">BIOGRAFÍA</a></li>
+      <li><a href="index.html" class="nav-regresar">Inicio</a></li>
+    </ul>
+  </nav>
+
+  <!-- ENCABEZADO -->
+  <header class="coleccion-header">
+    <p class="coleccion-eyebrow">Oskar Meyibo</p>
+    <h1 class="coleccion-titulo">La <em>colección</em></h1>
+    <p class="coleccion-subtitulo">Cada obra, lo que el artista quiso expresar</p>
+  </header>
+
+  <!-- OBRAS ALTERNADAS -->
+  <div class="obras-wrap">
+
+    <!-- OBRA 1 — imagen izquierda, texto derecha -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/tres.jpeg"
+          alt="El Guardián del Tótem"
+          class="lightbox-img"
+          data-titulo="El Guardián del Tótem"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Guardián del<em> Tótem</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta imponente obra presenta una compleja y simétrica composición de carácter mitológico y surrealista. En el eje central domina la majestuosa cabeza de una deidad animal totémica, reminiscente de un ciervo o un toro sagrado, en cuyo rostro se abre una cavidad ovoide, pulida y brillante, que simula un portal místico. De la propia estructura del tótem y a sus costados emergen rostros humanos estilizados en perfiles contrastantes de color rojo y azul profundo. En la parte inferior, dos figuras guardianas de un vibrante color verde y adornadas con símbolos elementales (fuego y geometría sagrada) custodian la base. Con una paleta cromática saturada que transita por gradientes psicodélicos, la pieza evoca un misticismo ancestral, transmitiendo una profunda sensación de protección, comunión espiritual y respeto por las fuerzas de la naturaleza.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Cada línea y cada color rinden homenaje a la sabiduría que reside en nuestras raíces más primitivas. El tótem no es un objeto, sino un espejo de la conciencia colectiva; las figuras humanas que brotan de él representan las almas protectoras encargadas de custodiar el vacío sagrado de la creación y la memoria de la tierra."
+        </p>
+
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Difuminado</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+   
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+        
+        
+      </div>
+    </article>
+
+
+
+   <!-- OBRA 2 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/11.jpeg"
+          alt="El Abrazo del Bosque"
+          class="lightbox-img"
+          data-titulo="El Abrazo del Bosque"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Abrazo del<em> Bosque</em></h2>
+        <p class="obra-año">Miniatura y ensamble</p>
+        <p class="obra-descripcion">
+          Esta singular pieza es una creación en formato de miniatura extrema de tan solo 1 cm x 1 cm , presentada sobre un diminuto caballete artesanal construido con palillos de madera. La pintura, a pesar de su escala microcósmica, logra capturar un imponente paisaje forestal donde densas siluetas de pinos y coníferas en tonos verde oscuro y negro se elevan con gran textura. El fondo presenta un sutil degradado que transita del blanco hacia un verde amarillento, simulando la neblina matutina o la luz filtrada a través de la fronda. La obra contrasta de forma poética la inmensidad del paisaje natural con la delicadeza de su diminuto soporte, transmitiendo una profunda sensación de intimidad, quietud y refugio.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "A través del microarte busco demostrar que las experiencias más vastas y sobrecogedoras, como perderse en la inmensidad de un bosque, pueden ser contenidas y resguardadas en la palma de la mano. Es una invitación a mirar de cerca y encontrar refugio en los detalles más pequeños del mundo."
+        </p>
+
+        <div class="obra-tecnica">
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Micro pintura</span>
+          <span class="obra-tag">Palillos de madera</span>
+          <span class="obra-tag">Ensamble</span>
+        </div>
+
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+
+
+
+<!-- OBRA 13 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A21.jpeg"
+          alt="El Despertar de la Conciencia Terrenal"
+          class="lightbox-img"
+          data-titulo="El Despertar de la Conciencia Terrenal"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Despertar de la<em> Conciencia Terrenal</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta fascinante y enigmática obra de corte surrealista, entreteje una intrincada red de símbolos orgánicos y psicológicos que exploran el vínculo sagrado entre la psique y los elementos de la naturaleza. En la esquina superior izquierda, emerge un rostro estilizado de trazos fluidos coronado por una amplia estructura foliar a modo de sombrero con un punto central encendido; de su barbilla desciende un largo e imperioso tallo verde que lo conecta directamente con la base. A su lado, una tenue y melancólica silueta lineal parece verter lágrimas en suspensión. En el centro inferior, una criatura mística reminiscente de un caracol despliega antenas que se ramifican como raíces oscuras hacia el cielo, mientras que en el extremo inferior izquierdo, una boca abierta se incrusta en el suelo rojizo extendiendo ramificaciones nerviosas. El flanco derecho está dominado por siluetas fluidas en tonos cálidos, ocres y púrpuras que sugieren la metamorfosis de un torso femenino en plena danza elemental. Todo el conjunto flota sobre un fondo nebuloso resuelto con un sutil estarcido de luces doradas, transmitiendo una profunda sensación de enraizamiento, misterio alquímico y el renacer de una consciencia puramente telúrica.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Busqué plasmar el retorno de la mente a sus orígenes primordiales, el momento exacto en que la consciencia humana despierta y se funde con la vibración secreta del suelo que pisa. La boca entre las raíces representa la voz de la memoria terrestre que reclama ser escuchada, mientras que el caracol con antenas de rama y las figuras en transformación simbolizan la lenta pero inexorable evolución de nuestra esencia espiritual al aceptar su naturaleza orgánica."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Aerógrafo</span>
+          <span class="obra-tag">Tinta fina</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+<!-- OBRA 14 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/O19.jpeg"
+          alt="La Ofrenda de la Luna Lunae"
+          class="lightbox-img"
+          data-titulo="La Ofrenda de la Luna Lunae"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">La Ofrenda de la<em> Luna Lunae</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta sutil y evocadora pieza de corte minimalista y surrealista, rinde tributo a la feminidad sagrada, la fertilidad y la conexión con los ciclos celestes. La obra presenta el busto de una figura femenina cuyos cabellos caen de manera fluida y sinuosa sobre el rostro, ocultando los ojos y concentrando la atención en la serenidad de sus labios. El torso y los senos están definidos con delicados difuminados y veladuras en tonos rosados y rojizos que emulan la pureza del aguacolor sobre el espacio negativo del papel. En la parte inferior, una mano abierta en un gesto ritual sostiene una pequeña esfera oscura a modo de perla u ofrenda primordial, mientras que del costado derecho brota una rama de hojas estilizadas que se curva hacia arriba emulando una sutil silueta creciente. Coronada en el eje superior por el trazo de una luna llena, la composición transmite una profunda sensación de pureza, misticismo íntimo y paz espiritual.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "La mujer y la luna comparten un mismo latido secreto; un ciclo eterno de creación, introspección y renovación. Con esta pieza busqué despojar la composición de cualquier exceso para plasmar la esencia de la entrega: la figura humana desprovista de artificios se convierte en un templo viviente que eleva su propia existencia como una ofrenda a las fuerzas sutiles del universo."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Aguacolor</span>
+          <span class="obra-tag">Tinta fina</span>
+          <span class="obra-tag">Difuminado</span>
+          <span class="obra-tag">Papel de algodón</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+<!-- OBRA 15 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A22.jpeg"
+          alt="La Quimera de las Sombras Errantes"
+          class="lightbox-img"
+          data-titulo="La Quimera de las Sombras Errantes"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">La Quimera de las<em> Sombras Errantes</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta profunda pieza de atmósfera onírica y mística, presenta una rica narrativa surrealista estructurada en dos planos simbólicos. En el primer plano a la izquierda, destaca un imponente ser quimérico con un rostro híbrido de facciones humanas y felinas, coronado por majestuosas alas de mariposa que despliegan un gradiente cromático de tonos magenta, verde y amarillo, extendiéndose sobre un torso segmentado. En el fondo, envueltas en una densa neblina de luces esmeralda, azules y amarillas, se aprecian las siluetas de varias figuras encapuchadas —las sombras errantes— en plena peregrinación, donde una de ellas alza su mano intentando alcanzar un gran orbe oscuro suspendido en el firmamento. La obra combina veladuras etéreas con texturas difuminadas, transmitiendo una intensa sensación de transmutación espiritual, misterio subconsciente y búsqueda existencial.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "La quimera es el testigo silencioso de nuestra propia evolución, una amalgama de la belleza y la extrañeza que habita en el inconsciente. Las sombras que marchan en el fondo representan el tránsito humano por los senderos de la incertidumbre; seres errantes que, a pesar de la oscuridad, siempre extienden los brazos hacia ese gran orbe celeste que simboliza la verdad absoluta y el despertar del ser."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Difuminado</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+<!-- OBRA 16 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A9.jpeg"
+          alt="El Tormento de las Sombras Carmesí"
+          class="lightbox-img"
+          data-titulo="El Tormento de las Sombras Carmesí"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Tormento de<em> las Sombras Carmesí</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta perturbadora y expresionista pieza, sumerge al espectador en un caótico escenario de angustia psicológica y agitación emocional. En el eje central del fondo, emerge un rostro pálido y profundamente alargado de rasgos abstractos, cuyos ojos melancólicos contemplan la escena con una silenciosa resignación. A su alrededor, un torbellino de figuras antropomórficas retorcidas y de extremidades sumamente elongadas, pintadas en un encendido color carmín y carmesí, se despliegan de manera frenética simulando caer o retorcerse en un abismo de sombras púrpuras y violetas. La densidad de las pinceladas y el violento contraste térmico entre el fondo lúgubre y las figuras encendidas saturan el espacio, transmitiendo una vívida sensación de claustrofobia, tormento interno y catarsis existencial.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Las sombras carmesí encarnan los pensamientos obsesivos, las culpas y los tormentos viscerales que se agitan en el subconsciente. El rostro alargado del centro representa la consciencia testigo, aquella que permanece atrapada y estática mientras observa cómo sus propios demonios internos configuran y desgarran el mapa de su realidad mental."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Texturizado</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+    <!-- OBRA 3 -->
+<article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/dos.jpeg"
+          alt="El Despertar del Sentido"
+          class="lightbox-img"
+          data-titulo="El Despertar del Sentido"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Despertar del<em> Sentido</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta sugerente obra de técnica mixta muestra una figura humana de perfil capturada en un instante de íntima y profunda experiencia sensorial mientras muerde una jugosa rebanada de sandía. El rostro y el torso del personaje se transforman en un lienzo de colores vibrantes, donde suaves difuminados de azul, amarillo, verde y rosa se entrelazan armónicamente. Sobre esta base cromática, destaca un minucioso e intenso trabajo de líneas negras angulares y estilizadas que configuran el cabello con patrones que simulan hojas, y delinean las manos con trazos geométricos y orgánicos que recuerdan a ráfagas de fuego o texturas vegetales. El fondo emite un cálido resplandor expansivo, reforzando una atmósfera de vitalidad pura, deleite estético y comunión con los elementos más elementales de la naturaleza.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Quise plasmar el preciso momento en que un estímulo natural quiebra la anestesia cotidiana y enciende la percepción humana. Saborear la fruta se convierte en un acto sagrado, un ritual donde el gusto y el tacto nos devuelven la consciencia del aquí y el ahora, fusionando nuestra anatomía con la energía viva de la tierra."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Tinta fina</span>
+          <span class="obra-tag">Lápices de color</span>
+          <span class="obra-tag">Pastel seco</span>
+          <span class="obra-tag">Papel de algodón</span>
+        </div>
+
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+
+
+
+    <!-- OBRA 4 -->
+   <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/iv.jpeg"
+          alt="El Vuelo de la Amatista"
+          class="lightbox-img"
+          data-titulo="El Vuelo de la Amatista"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Vuelo de<em> la Amatista</em></h2>
+        <p class="obra-año">Escultura y ensamble</p>
+        <p class="obra-descripcion">
+          Esta pieza tridimensional es una delicada escultura que evoca la estética de un árbol bonsái místico en pleno brote. El tronco está formado por una rama delgada y natural que describe una elegante y pronunciada curva, proyectando la copa hacia el cielo con una notable sensación de ligereza. La vegetación del espécimen está compuesta por una densa aglomeración de pequeñas cuentas, cristales y filamentos sintéticos en un vibrante color violeta, que capturan la luz emulando los destellos de un geoda de amatista. Toda la estructura se arraiga en una base circular hecha a mano con fragmentos de roca volcánica porosa de tonos oscuros y rojizos cementados, simulando un antiguo pozo de piedra. La obra juega magistralmente con el contraste entre la solidez terrestre de su base y la fragilidad aérea de su follaje, transmitiendo serenidad, equilibrio y transmutación.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "A través de esta pieza busqué representar la capacidad de la naturaleza y del espíritu humano para florecer incluso desde los cimientos más áridos y pesados. La amatista simboliza la transmutación y la paz interior; al suspenderse en lo alto de una rama sinuosa, el mineral se libera de su peso terrenal para emprender un vuelo puramente espiritual y estético."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Roca volcánica</span>
+          <span class="obra-tag">Madera natural</span>
+          <span class="obra-tag">Cuentas de fantasía</span>
+          <span class="obra-tag">Cemento</span>
+        </div>
+
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+
+
+    <!-- OBRA 5 -->
+   <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/cuatro.jpeg"
+          alt="La Cuna Cósmica"
+          class="lightbox-img"
+          data-titulo="La Cuna Cósmica"
+
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">La Cuna<em> Cósmica</em></h2>
+        <p class="obra-año">Técnica al Óleo</p>
+        <p class="obra-descripcion">
+          Esta obra presenta una composición mística y orgánica de carácter concéntrico que evoca la gestación y el origen de la vida. En la parte superior derecha, un gran rostro pálido de perfil, reminiscente de una deidad lunar o una presencia materna universal, contempla la escena con una mirada serena y profunda. En el núcleo, una figura esférica en tonos azules y violáceos resguarda en su interior a un pequeño ser en posición fetal, mientras es abrazada por una silueta purpúrea en el flanco izquierdo. Toda la escena se desarrolla en un movimiento envolvente y fluido, donde los matices de azul, violeta y destellos magenta contrastan con la penumbra del fondo, transmitiendo una profunda sensación de cobijo, introspección y protección primordial.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "El universo entero es una matriz sagrada; somos polvo de estrellas siendo acunados por fuerzas que no alcanzamos a comprender." El autor busca representar el misterio del nacimiento y la existencia no como un hecho puramente biológico, sino como un acontecimiento conectado directamente con el cosmos. La pieza interpreta la vida humana como una chispa divina protegida por conciencias ancestrales que velan por el espíritu desde su estado más vulnerable.
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Pigmentos</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+
+
+    <!-- OBRA 6 -->
+
+<article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/uno.jpeg"
+          alt="El Vuelo del Espíritu Helado"
+          class="lightbox-img"
+          data-titulo="El Vuelo del Espíritu Helado"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Vuelo del<em> Espíritu Helado</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">En primer plano, un gran domo transparente encierra una figura femenina vestida de blanco en una pose de danza y un Pegasus blanco que la acompaña sobre un paisaje marino helado con orillas de hielo y espuma. El fondo se abre a un vasto cosmos con grandes planetas y un cielo lleno de estrellas, cruzado por una banda de color descolorida. Estructuras de hielo y cristal cuelgan y se erigen en el cielo, brillando en azul. La técnica de aerógrafo se utiliza para el cielo y la esfera, mientras que los detalles de las figuras y el hielo se refinan con acrílico y lápiz de color sobre papel de alto gramaje. La obra transmite un sentido de misticismo, frío-belleza y libertad.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "El frío del universo no es más que un lienzo para el calor de nuestros sueños." El artista busca capturar un momento de revelación interior, donde la mente protegida (el domo) y el espíritu libre (la bailarina y el Pegasus) encuentran armonía en la inmensidad gélida y vasta del cosmos, una metáfora de la libertad del pensamiento frente a la realidad externa.
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Aerógrafo</span>
+          <span class="obra-tag">Lápiz</span>
+          <span class="obra-tag">Papel</span>
+        </div>
+
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+
+
+<!-- OBRA 7 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/VI.jpeg"
+          alt="El Guardián de la Penumbra"
+          class="lightbox-img"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Guardián de<em> la Penumbra</em></h2>
+        <p class="obra-año">Arte textil y plumario</p>
+        <p class="obra-descripcion">
+          Esta pieza escultórica es un atrapasueños tejido meticulosamente para formar la figura de un búho. Compuesta por aros entrelazados con hilo marrón, destaca por su red de hilo amarillo en el rostro, formando patrones geométricos concéntricos con cuentas ámbar que dan vida a su mirada. Plumas oscuras y de tonos verdosos descienden a los costados simulando las alas, coronando también la parte superior a modo de plumaje auricular. Transmite un aura de misticismo y protección, evocando a los espíritus guardianes del bosque con una sutileza mágica y ancestral.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Quise materializar la figura del vigilante nocturno, aquel que filtra las inquietudes y preserva la calma en la oscuridad. El búho actúa aquí como un tótem protector, un guardián silencioso de la sabiduría que vela nuestros sueños y disipa las sombras."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Hilo entrelazado</span>
+          <span class="obra-tag">Plumas naturales</span>
+          <span class="obra-tag">Cuentas decorativas</span>
+          <span class="obra-tag">Aros moldeados</span>
+        </div>
+
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+  
+
+<!-- OBRA 8 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A1.jpeg"
+          alt="El Despertar de la Consciencia Creativa"
+          class="lightbox-img"
+          data-titulo="El Despertar de la Consciencia Creativa"
+          />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Despertar de la<em> Consciencia Creativa</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Inspirada en las dinámicas del surrealismo y el expresionismo, esta imponente pieza sumerge al espectador en un escenario onírico dominado por una cautivadora paleta monocromática de tonos verdes. En el eje central, una estilizada figura antropomórfica emerge de las entrañas de la tierra; su rostro se congela en un grito de liberación o catarsis, mientras sus brazos se extienden desmesuradamente hacia el firmamento, rematando en dos colosales manos abiertas dispuestas a recibir la energía cósmica. El suelo está definido por profundas líneas de perspectiva radial que emulan los surcos de un campo labrado, guiando la mirada hacia un horizonte infinito. En la lejanía, sutiles siluetas esqueléticas interactúan con árboles secos y yermos, acentuando el contraste entre la desolación del entorno y la avasalladora fuerza vital de la entidad central. El cielo, cargado de texturas turbulentas, neblina y pequeñas gotas en suspensión junto a distantes aves, envuelve la escena en una atmósfera de profunda transformación, misticismo y comunión telúrica.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "La creación no surge de la comodidad, sino de una ruptura interna. Esta obra plasma el doloroso pero sublime instante en el que la mente humana rompe con sus limitaciones terrenales; nos arraigamos con fuerza al suelo sagrado, pero extendemos nuestra esencia hacia el infinito para canalizar la verdadera inspiración que transforma los páramos áridos en templos de consciencia."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Perspectiva</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+
+<!-- OBRA 9 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A5.jpeg"
+          alt="La Dualidad de la Mente Abierta"
+          class="lightbox-img"
+          data-titulo="La Dualidad de la Mente Abierta"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">La Dualidad de la<em> Mente Abierta</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta profunda pieza de corte surrealista, presenta un intrigante juego de retratos psicológicos que exploran los misterios del pensamiento. En la sección derecha destaca un gran rostro masculino en tonos oliváceos y ocres; su cabeza se encuentra literalmente abierta en la parte superior, formando una cavidad de la cual emergen dos pequeñas siluetas humanas en perfil que parecen interactuar en un diálogo íntimo o confrontación de ideas. En el flanco izquierdo, en un primer plano impregnado de matices rojizos y encendidos, se aprecia el rostro de una mujer con los ojos cerrados en actitud contemplativa o de trance, rompiendo la calidez de su piel con unos labios pintados de un vibrante azul eléctrico que dejan entrever sus dientes. En el fondo superior izquierdo, una silueta etérea evoca una resonancia o eco de este mismo rostro. La combinación de texturas suaves, contrastes térmicos entre el azul y el rojo, y la simbología de las figuras expuestas transmite una potente sensación de introspección, debate interno y apertura mental.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "La mente humana no es un contenedor estático, sino un escenario dinámico donde coexisten múltiples voces y polaridades. Con esta obra busqué representar la transición entre el secreto mundo de las emociones reprimidas o soñadas —el rostro de labios azules con los ojos cerrados— y la liberación intelectual que ocurre cuando permitimos que nuestras ideas dialoguen abiertamente de cara a la realidad."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Difuminado</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+      </div>
+    </article>
+
+
+<!-- OBRA 10 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A2.jpeg"
+          alt="Misticismo Nocturno Felino"
+          class="lightbox-img"
+          data-titulo="Misticismo Nocturno Felino"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">Misticismo Nocturno<em> Felino</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta cautivadora obra, rinde un tributo surrealista a la elegancia y el enigma del mundo felino. En el centro de la composición, la estilizada silueta de un gato en un profundo color azul cobalto captura la atención absoluta; en su pecho se asienta un círculo blanco perfecto que evoca la pureza de la luna llena, sugiriendo que el animal resguarda el cosmos en su interior. El fondo es una explosión cósmica de texturas difuminadas donde un vibrante rosa magenta se entrelaza con el violeta y la penumbra de los bordes. Una brillante estela dorada y amarilla contornea sutilmente el lomo y las orejas del felino, dotándolo de un aura divina. En la base, formas sinuosas y orgánicas en tonos verdes, rojizos y oscuros anclan la figura, consolidando una atmósfera de magia ancestral, serenidad espiritual y guardianía nocturna.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Los felinos siempre han sido los puentes silenciosos entre el mundo material y el esotérico. Con esta pieza busqué plasmar la transición donde el animal deja de ser una criatura terrenal para convertirse en la noche misma; un guardián totémico que lleva la luz de la luna en su corazón para guiar las almas a través de la oscuridad."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Aerógrafo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Estarcido</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+<!-- OBRA 11-->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A10.jpeg"
+          alt="El Eco del Dolor Suspendido"
+          class="lightbox-img"
+          data-titulo="El Eco del Dolor Suspendido"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">El Eco del<em> Dolor Suspendido</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta desgarradora y visceral pieza de corte surrealista y expresionista, plasma de manera cruda la fragmentación psicológica del sufrimiento humano. En la parte superior central flotan las facciones de un rostro suspendido en una mueca de dolor agónico, con la boca abierta revelando los dientes y los ojos cerrados con fuerza en un grito silencioso. En la sección inferior derecha, una figura corpórea aparece encorvada y retorcida sobre sí misma en una postura de extrema vulnerabilidad ante la aflicción. Dos pequeñas siluetas de manos incorpóreas flotan de manera aislada en los extremos opuestos del espacio, acentuando la sensación de desolación y desapego. La paleta cromática destaca por sus texturas densas e impregnadas en tonos ocres, amarillos encendidos, magentas profundos y rojos tierra, envolviendo toda la escena en una atmósfera asfixiante que transmite una profunda angustia, opresión y catarsis emocional.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "Con esta obra busqué dar forma a la persistencia de la aflicción; cómo el dolor no siempre se desvanece con el tiempo, sino que se suspende en nuestra atmósfera mental como un eco constante que gravita sobre nosotros. El rostro flotante representa el trauma que vigila desde la memoria, mientras que el cuerpo replegado abajo personifica la resistencia física y emocional del ser frente a su propia tormenta interior."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Texturizado</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+
+<!-- OBRA 12 -->
+    <article class="obra">
+      <div class="obra-imagen">
+        <img
+          src="img/A8.jpeg"
+          alt="Éxodo bajo la Tormenta Geométrica"
+          class="lightbox-img"
+          data-titulo="Éxodo bajo la Tormenta Geométrica"
+        />
+      </div>
+      <div class="obra-texto">
+        <h2 class="obra-titulo">Éxodo bajo la<em> Tormenta Geométrica</em></h2>
+        <p class="obra-año">Técnica mixta</p>
+        <p class="obra-descripcion">
+          Esta vibrante e inquietante obra, transporta al espectador a un paraje desértico y agrietado compuesto por una intensa paleta de amarillos, naranjas y rojos encendidos que simulan una tierra ardiente. Sobre este suelo, diversas figuras abstractas emprenden una silenciosa marcha o migración; en el primer plano a la derecha, destaca una estilizada silueta de trazos orgánicos y tonos ocre cuyo rostro evoca una mirada mística y almendrada. El cielo es un hervidero cósmico y turbulento de nubes cargadas de tonalidades púrpuras, magentas y azules. El elemento central y disruptivo es una descomunal descarga de energía o rayo de líneas rígidamente geométricas y facetadas en tonos verde esmeralda y turquesa, que rasga verticalmente la composición e impacta el horizonte. La pieza transmite una abrumadora sensación de vulnerabilidad existencial, resiliencia humana frente a la adversidad y un misticismo apocalíptico de gran fuerza dramática.
+        </p>
+        <p class="obra-significado-label">Lo que el artista quiso expresar</p>
+        <p class="obra-significado">
+          "El éxodo representa el eterno caminar de la humanidad hacia lo desconocido, despojados de certezas materiales. La tormenta geométrica simboliza las fuerzas implacables del destino y el cambio radical que irrumpen con precisión matemática en nuestras vidas; ante la fractura del entorno, los seres no se detienen, continúan su marcha impulsados por la fe sagrada de la supervivencia."
+        </p>
+        <div class="obra-tecnica">
+          <span class="obra-tag">Óleo</span>
+          <span class="obra-tag">Acrílico</span>
+          <span class="obra-tag">Espátula</span>
+          <span class="obra-tag">Lienzo</span>
+        </div>
+
+        <!-- para poder escuchar y no leer -->
+
+        <button class="btn-leer" onclick="leerObra(this)">
+        🔊 Escuchar obra
+        </button>
+
+        <!-- para poder detener y no leer -->
+
+        <button class="btn-detener" onclick="speechSynthesis.cancel()">
+        ⏹ Detener
+        </button>
+
+
+      </div>
+    </article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  <footer>
+    <p>Museo de Arte · Oskar Meyibo &nbsp;·&nbsp; Todos los derechos reservados &nbsp;·&nbsp; 2026</p>
+  <p style="margin-top:0.5rem; font-size:0.65rem; opacity:0.6;">
+  Las obras, imágenes y contenido de este sitio son propiedad intelectual 
+  de los herederos de Juan Carlos González Trinidad (Oskar Meyibo). 
+  Queda prohibida su reproducción, distribución o uso comercial 
+  sin autorización expresa.
+</p>
+  </footer>
+
+  <script src="js/lightbox.js"></script>
+     
+<!-- script para poder hacer funcionar el boton de lectura  -->
+
+<script>
+function leerObra(boton) {
+    const obra = boton.closest(".obra-texto");
+
+    const titulo = obra.querySelector(".obra-titulo").innerText;
+    const descripcion = obra.querySelector(".obra-descripcion").innerText;
+    const significado = obra.querySelector(".obra-significado").innerText;
+
+    const texto = titulo + ". " + descripcion + ". " + significado;
+
+    speechSynthesis.cancel();
+
+    const mensaje = new SpeechSynthesisUtterance(texto);
+
+    // obtener voces disponibles
+    const voces = speechSynthesis.getVoices();
+
+    // buscar voz femenina en español
+    const voz = voces.find(v =>
+        v.lang.includes("es") &&
+        (
+          v.name.includes("Google") ||
+          v.name.includes("Helena") ||
+          v.name.includes("Paulina") ||
+          v.name.includes("Sabina")
+        )
+    );
+
+    if (voz) mensaje.voice = voz;
+
+    mensaje.lang = "es-MX";
+    mensaje.rate = 0.92;
+    mensaje.pitch = 1.2;   // un poco más natural
+
+    speechSynthesis.speak(mensaje);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Museo de Arte · Oskar Meyibo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap');
+
+    :root {
+      --negro:      #0a0a0a;
+      --carbon:     #141414;
+      --gris-1:     #1e1e1e;
+      --gris-2:     #2e2e2e;
+      --gris-muted: #888;
+      --blanco:     #f5f2ec;
+      --dorado:     #c9a96e;
+      --fuente-display: 'Cormorant Garamond', Georgia, serif;
+      --fuente-body:    'Inter', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--negro);
+      color: var(--blanco);
+      font-family: var(--fuente-body);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(10,10,10,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .nav-logo {
+      font-family: var(--fuente-display);
+      font-size: 1.2rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--blanco); }
+    .nav-links a.activo { color: var(--dorado); }
+
+    .nav-regresar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gris-2);
+    }
+
+    .nav-regresar:hover { color: var(--dorado); border-color: var(--dorado); }
+    .nav-regresar::before { content: '←'; font-size: 1rem; }
+
+    /* ── Hero del artista ── */
+    .artista-hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+    }
+
+    .artista-hero-img {
+      position: relative;
+      overflow: hidden;
+      background: var(--gris-1);
+    }
+
+    .artista-hero-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(20%) contrast(1.05);
+      display: block;
+    }
+
+    /* Overlay con gradiente en la foto */
+    .artista-hero-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, transparent 60%, var(--negro) 100%);
+    }
+
+.foto-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+    .foto-placeholder span {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .foto-placeholder .icono { font-size: 2.5rem; opacity: 0.3; }
+
+    .artista-hero-texto {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 4rem 5rem 3rem;
+      position: relative;
+    }
+
+    .artista-eyebrow {
+      font-size: 1.2rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1.5rem;
+    }
+
+    .artista-nombre {
+      font-family: var(--fuente-display);
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.0;
+      color: var(--blanco);
+    }
+
+    .artista-nombre em {
+      font-style: italic;
+      color: var(--dorado);
+      display: block;
+    }
+
+    .artista-fechas {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.15em;
+      border-left: 1px solid var(--dorado);
+      padding-left: 1rem;
+    }
+
+    .artista-intro {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: var(--blanco);
+      font-weight: 300;
+      line-height: 1.8;
+      max-width: 50ch;
+      opacity: 0.85;
+    }
+
+    /* Cita destacada */
+    .cita-grande {
+      margin-top: 2.5rem;
+      padding: 1.5rem 0 1.5rem 1.5rem;
+      border-left: 2px solid var(--dorado);
+    }
+
+    .cita-grande p {
+      font-family: var(--fuente-display);
+      font-size: 1.35rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--dorado);
+      line-height: 1.5;
+    }
+
+    .cita-grande cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gris-muted);
+      font-style: normal;
+    }
+
+    /* ── Sección: Trayectoria ── */
+    .seccion {
+      padding: 6rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .seccion-label {
+      font-size: 0.rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .seccion-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gris-2);
+    }
+
+    /* Timeline de exposiciones */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 120px 1px 1fr;
+      gap: 0 2rem;
+      padding-bottom: 3rem;
+    }
+
+    .timeline-año {
+      font-family: var(--fuente-display);
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--dorado);
+      text-align: right;
+      padding-top: 0.1rem;
+    }
+
+    .timeline-linea {
+      position: relative;
+      background: var(--gris-2);
+    }
+
+    .timeline-linea::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--dorado);
+    }
+
+    .timeline-contenido {
+      padding-top: 0;
+    }
+
+    .timeline-titulo {
+      font-family: var(--fuente-display);
+      font-size: 1.7rem;
+      font-weight: 300;
+      color: var(--blanco);
+      margin-bottom: 0.4rem;
+    }
+
+    .timeline-lugar {
+      font-size: 0.9rem;
+      color: var(--dorado);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .timeline-desc {
+      font-size: 0.9rem;
+      color: var(--gris-muted);
+      line-height: 1.7;
+      max-width: 60ch;
+    }
+
+    /* ── Sección: Técnica ── */
+    .tecnica-wrap {
+      background: var(--carbon);
+      padding: 6rem 3rem;
+    }
+
+    .tecnica-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .tecnica-titulo {
+      font-family: var(--fuente-display);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300;
+      color: var(--blanco);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .tecnica-titulo em { font-style: italic; color: var(--dorado); }
+
+    .tecnica-texto {
+      font-size: 0.92rem;
+      color: var(--gris-muted);
+      line-height: 1.9;
+      margin-bottom: 1.2rem;
+    }
+
+    .tecnica-texto strong {
+      color: var(--blanco);
+      font-weight: 400;
+    }
+
+    /* Ingredientes de la técnica */
+    .ingredientes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .ingrediente {
+      padding: 1.2rem;
+      border: 1px solid var(--gris-2);
+      background: var(--gris-1);
+    }
+
+    .ingrediente-nombre {
+      font-family: var(--fuente-display);
+      font-size: 1.3rem;
+      color: var(--dorado);
+      font-weight: 300;
+    }
+
+    .ingrediente-desc {
+      font-size: 0.8rem;
+      color: var(--gris-muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Segunda foto ── */
+    .segunda-foto {
+      position: relative;
+      overflow: hidden;
+      background: var(--gris-1);
+    }
+
+    .segunda-foto img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(20%);
+      display: block;
+    }
+
+    /* ── Prensa ── */
+    .prensa-wrap {
+      padding: 6rem 3rem;
+      background: var(--negro);
+    }
+
+    .prensa-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .prensa-card {
+      border: 1px solid var(--gris-2);
+      padding: 2rem;
+      background: var(--carbon);
+      position: relative;
+    }
+
+    .prensa-card::before {
+      content: '"';
+      font-family: var(--fuente-display);
+      font-size: 5rem;
+      color: var(--dorado);
+      opacity: 0.2;
+      position: absolute;
+      top: 0.5rem;
+      left: 1.5rem;
+      line-height: 1;
+    }
+
+    .prensa-texto {
+      font-family: var(--fuente-display);
+      font-size: 1.2rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--blanco);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .prensa-fuente {
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dorado);
+    }
+
+    .prensa-fecha {
+      font-size: 0.75rem;
+      color: var(--gris-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* ── Stats / datos ── */
+    .stats-wrap {
+      background: var(--carbon);
+      border-top: 1px solid var(--gris-2);
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .stats-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-right: 1px solid var(--gris-2);
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-numero {
+      font-family: var(--fuente-display);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--dorado);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gris-muted);
+      margin-top: 0.5rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem;
+      background: var(--negro);
+      border-top: 1px solid var(--gris-2);
+      font-size: 0.75rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1rem; }
+      .artista-hero { grid-template-columns: 1fr; }
+      .artista-hero-texto { padding: 3rem 1.5rem; }
+      .tecnica-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .seccion { padding: 4rem 1.5rem; }
+    }
+
+
+    /* Contenedor que las alinea horizontalmente en computadoras */
+    .imagenes-contenedor {
+    display: flex;
+    flex-direction: row;      /* Una al lado de la otra */
+    gap: 1.5rem;              /* Espacio de separación entre las dos imágenes */
+    width: 100%;
+    max-width: 1100px;        /* Ancho máximo de la sección */
+    margin: 0 auto;           /* Centra el contenedor en la pantalla */
+    }
+
+    /* Controla que las imágenes mantengan la misma proporción y tamaño */
+    .imagenes-contenedor img {
+    width: 50%;               /* Cada una ocupa la mitad del espacio disponible */
+    height: 740px;            /* Altura fija para que queden simétricas */
+    object-fit: cover;        /* Recorta la imagen elegantemente sin deformarla */
+    display: block;
+    }
+
+    /* Moviles: Se adaptan de forma vertical automáticamente */
+    @media (max-width: 768px) {
+    .imagenes-contenedor {
+        flex-direction: column; /* Cambia a una abajo de la otra */
+    }
+    
+    .imagenes-contenedor img {
+        width: 100%;            /* Ocupan todo el ancho de la pantalla del celular */
+        height: 300px;          /* Ajuste de altura opcional para móviles */
+    }
+    }
+
+  </style>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <span class="nav-logo">Museo &middot; OskarMeyibo</span>
+    <ul class="nav-links">
+      <li><a href="galeria.html">Galería</a></li>
+      <li><a href="acerca.html" class="activo">BIOGRAFÍA</a></li>
+      <li><a href="index.html" class="nav-regresar">Inicio</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO DEL ARTISTA -->
+  <section class="artista-hero">
+
+    <div class="artista-hero-img">
+    <div class="foto-placeholder">
+        <h1 class="artista-nombre">
+        Oskar Meyibo
+        <em>Juan Carlos González Trinidad</em>
+        </h1>
+        <img src="img/artista.jpeg" alt="Oskar Meyibo" class="lightbox-img"/>
+    </div>
+    </div>
+
+
+    <div class="artista-hero-texto">
+
+
+      <p style="
+    font-family: var(--fuente-display);
+    font-size: 5rem;
+    font-weight: 300;
+    color: var(--blanco);
+    margin-bottom: 0.5rem;
+  ">1966 — 2020</p>
+  <br>
+  <br>
+  <br>
+  <br>
+      <p class="artista-eyebrow">El artista</p>
+
+      <p class="artista-intro">
+Nació en la Ciudad de México, en el año de 1966, se inicia desde su adolescencia y es autodidacta en las ARTES PLASTICAS. Toma cursos iniciales en el MUSEO DEL CHOPO y posteriormente ingresa en el I.N.B.A., al C.E.D.A.R.T. "FRIDA HAHLO", donde toma parte en Artes Plásticas y la materia de TEATRO. Su propia inquietud lo lleva a abandonar dicho Instituto. Monta su primera Exposición en el I.P.N. dando una grata sorpresa con su Obra, a las personas que le conocemos, aunque un Artista como una Obra Jóven, tiene mucho que ofrecer, YA QUE SU OBRA OFRECE LA ORIGINALIDAD INDISPENSABLE PARA LOGRAR UN LUGAR, EN ESTE DIFICIL MUNDO DEL ARTE.
+      </p>
+
+      <div class="cita-grande">
+        <p>
+          "La línea que sigo es totalmente surrealista, pero me gusta dejar un poco en el
+          edo; una ironía plasmada con todos sus colores."
+        </p>
+        <cite>— Oskar Meyibo</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATOS EN CIFRAS -->
+  <div class="stats-wrap">
+    <div class="stats-grid">
+      <div class="stat">
+        <p class="stat-numero">7</p>
+        <p class="stat-label">Exposiciones</p>
+      </div>
+      <div class="stat">
+        <p class="stat-numero">2</p>
+        <p class="stat-label">Alianza Francesa</p>
+      </div>
+      <div class="stat">
+        <p class="stat-numero">15</p>
+        <p class="stat-label">Cuadros en "El transmundo"</p>
+      </div>
+      <div class="stat">
+        <p class="stat-numero">'90</p>
+        <p class="stat-label">Excélsior · Enero 1990</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRAYECTORIA -->
+  <section class="seccion">
+    <p class="seccion-label">A destacar</p>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <p class="timeline-año">IPN</p>
+        <div class="timeline-linea"></div>
+        <div class="timeline-contenido">
+          <p class="timeline-titulo">Primera exposición</p>
+          <p class="timeline-lugar">Instituto Politécnico Nacional</p>
+          <p class="timeline-desc">
+            Monta su primera muestra en el IPN, dando una grata sorpresa con su obra a
+            quienes lo conocen. Una obra joven, con mucho que ofrecer —
+            con la originalidad indispensable para lograr un lugar en el difícil mundo del arte.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <p class="timeline-año"></p>
+        <div class="timeline-linea"></div>
+        <div class="timeline-contenido">
+          <p class="timeline-titulo">Alianza Francesa</p>
+          <p class="timeline-lugar">Plantel Lindavista · Ciudad de México</p>
+          <p class="timeline-desc">
+            Presenta su obra en dos ocasiones en la Alianza Francesa de México,
+            donde el director Nicolas Tabuteau destacó la intensidad de su trabajo
+            y la riquísima variedad y calidad de sus creaciones.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <p class="timeline-año">1990</p>
+        <div class="timeline-linea"></div>
+        <div class="timeline-contenido">
+          <p class="timeline-titulo">"Espacios Llenos"</p>
+          <p class="timeline-lugar">Alianza Francesa · Manizales 718 · Inauguración 23 enero</p>
+          <p class="timeline-desc">
+            Exposición reseñada por el periódico Excélsior el jueves 25 de enero de 1990.
+            El acto tuvo lugar en la Alianza Francesa de México A.C., Centro Lindavista.
+            Los asistentes recorrieron la muestra e hicieron elogiosos comentarios sobre la obra del artista.
+            Se clausuró el 9 de febrero.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <p class="timeline-año"></p>
+        <div class="timeline-linea"></div>
+        <div class="timeline-contenido">
+          <p class="timeline-titulo">"El transmundo de mi mente"</p>
+          <p class="timeline-lugar">Casa de la Cultura · San Pedro Mártir</p>
+          <p class="timeline-desc">
+            Quince cuadros componen esta exposición de corte surrealista. Entre las obras destacan:
+            <em>Miren, miren la libertad</em>, <em>Romance de los cisnes</em> y
+            <em>Una rosa azul para una noche de pasión</em>.
+            En ella, la línea y el color tratan de tomar la figura femenina como elemento
+            central — el transmundo de su mente.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TÉCNICA -->
+  <div class="tecnica-wrap">
+    <div class="tecnica-grid">
+      <div>
+        <p class="seccion-label">Técnica</p>
+        <h2 class="tecnica-titulo">
+          Cenizas y tequila:<br>
+          una <em>nueva técnica</em><br>pictórica
+        </h2>
+        <p class="tecnica-texto">
+          La técnica que Meyibo utiliza en sus cuadros es la <strong>técnica mixta</strong>,
+          la cual consiste en la utilización de plumón, aguacolor, cenizas de cigarro y tequila.
+        </p>
+        <p class="tecnica-texto">
+          Esta mezcla surgió gracias a un accidente —puntualizó Meyibo— pues al no tener agua
+          para diluir el aguacolor utilizó el tequila; así, el alcohol que contenía diluyó la pintura
+          y las cenizas tomaron otros tonos.
+        </p>
+        <p class="tecnica-texto">
+          Sus creaciones emplean la figura femenina como elemento central y las alas como
+          plenos satisfactores de <strong>libertad</strong>.
+        </p>
+        <div class="ingredientes">
+          <div class="ingrediente">
+            <p class="ingrediente-nombre">Plumón</p>
+            <p class="ingrediente-desc">Base de trazo y definición</p>
+          </div>
+          <div class="ingrediente">
+            <p class="ingrediente-nombre">Aguacolor</p>
+            <p class="ingrediente-desc">Color y transparencia</p>
+          </div>
+          <div class="ingrediente">
+            <p class="ingrediente-nombre">Cenizas</p>
+            <p class="ingrediente-desc">Textura y profundidad</p>
+          </div>
+          <div class="ingrediente">
+            <p class="ingrediente-nombre">Tequila</p>
+            <p class="ingrediente-desc">Diluyente — el accidente que lo cambió todo</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="segunda-foto" style="min-height:500px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gris-2);">
+        <div class="foto-placeholder">
+          <span style="font-size:0.65rem;opacity:0.5"></span>
+        <img src="img/ceniza.png" alt="Cenizas y tequila: una nueva técnica pictórica" class="lightbox-img"/>
+      </div>
+    </div>
+  </div>
+
+
+  <br><br>
+  <!-- PRENSA -->
+  <div class="prensa-wrap">
+    <div class="seccion" style="padding-top:0">
+      <p class="seccion-label">Prensa y crítica</p>
+      <div class="prensa-grid">
+
+        <div class="prensa-card">
+          <p class="prensa-texto">
+            La obra de Meyibo es intensa en el tema, pero ligera; se entiende con facilidad
+            y está llena de una riquísima variedad y calidad de color.
+          </p>
+          <p class="prensa-fuente">Nicolas Tabuteau</p>
+          <p class="prensa-fecha">Director · Alianza Francesa de México</p>
+        </div>
+
+        <div class="prensa-card">
+          <p class="prensa-texto">
+            Pinta por un sentimiento propio, y para que el público al ver su trabajo
+            se cuestione qué faltó y así cause cualquier tipo de sensación.
+          </p>
+          <p class="prensa-fuente">Excélsior</p>
+          <p class="prensa-fecha">Jueves 25 de enero de 1990 · Sección 3-B</p>
+        </div>
+
+        <div class="prensa-card">
+          <p class="prensa-texto">
+            Una obra joven con mucho que ofrecer, ya que su obra posee la originalidad
+            indispensable para lograr un lugar en este difícil mundo del arte.
+          </p>
+          <p class="prensa-fuente">Guillermo Espíndola</p>
+          <p class="prensa-fecha">Reseña crítica · Exposición IPN</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMACIÓN -->
+  <section class="seccion">
+    <p class="seccion-label">Formación</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;">
+
+      <div style="padding:2rem;border:1px solid var(--gris-2);background:var(--carbon);">
+        <p style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--dorado);margin-bottom:0.8rem;">Autodidacta</p>
+        <p style="font-family:var(--fuente-display);font-size:1.2rem;font-weight:300;color:var(--blanco);margin-bottom:0.5rem;">Desde la adolescencia</p>
+        <p style="font-size:0.83rem;color:var(--gris-muted);line-height:1.7;">
+          Se inicia en las artes plásticas desde joven, impulsado por su propia inquietud
+          y sensibilidad ante el mundo que lo rodea.
+        </p>
+      </div>
+
+      <div style="padding:2rem;border:1px solid var(--gris-2);background:var(--carbon);">
+        <p style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--dorado);margin-bottom:0.8rem;">Museo del Chopo</p>
+        <p style="font-family:var(--fuente-display);font-size:1.2rem;font-weight:300;color:var(--blanco);margin-bottom:0.5rem;">Cursos iniciales</p>
+        <p style="font-size:0.83rem;color:var(--gris-muted);line-height:1.7;">
+          Toma sus primeros cursos formales en el Museo del Chopo,
+          donde consolida las bases de su técnica y lenguaje visual.
+        </p>
+      </div>
+
+      <div style="padding:2rem;border:1px solid var(--gris-2);background:var(--carbon);">
+        <p style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--dorado);margin-bottom:0.8rem;">IPN · CEDART</p>
+        <p style="font-family:var(--fuente-display);font-size:1.2rem;font-weight:300;color:var(--blanco);margin-bottom:0.5rem;">"Frida Kahlo"</p>
+        <p style="font-size:0.83rem;color:var(--gris-muted);line-height:1.7;">
+          Ingresa al CEDART "Frida Kahlo" del INBAL, donde toma parte en Artes Plásticas
+          y la materia de Teatro. Su propia inquietud lo lleva eventualmente a abandonar
+          dicho Instituto para forjar su propio camino.
+        </p>
+      </div>
+
+      <div style="padding:2rem;border:1px solid var(--gris-2);background:var(--carbon);">
+        <p style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--dorado);margin-bottom:0.8rem;">Pintura callejera</p>
+        <p style="font-family:var(--fuente-display);font-size:1.2rem;font-weight:300;color:var(--blanco);margin-bottom:0.5rem;">Arte manual y urbano</p>
+        <p style="font-size:0.83rem;color:var(--gris-muted);line-height:1.7;">
+          Dedica tiempo a la pintura callejera —conocida como spray— y a las artesanías manuales.
+          Su afición por el arte de la pintura surgió al asistir a una exposición de surrealismo
+          que vio cuando tenía 14 años de edad.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+    <p class="seccion-label">Memoria Histórica</p>
+    <div class="imagenes-contenedor">
+  <img src="img/mem1.jpeg"  class="lightbox-img">
+  <img src="img/mem2.jpeg"  class="lightbox-img">
+</div>
+
+
+
+
+<!-- VIDEO -->
+<div style="
+  text-align: center;
+  padding: 5rem 3rem;
+  background: var(--carbon);
+  border-top: 1px solid var(--gris-2);
+">
+  <p style="
+    font-size: 0.9rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--dorado);
+    margin-bottom: 2rem;
+  ">El artista creando arte</p>
+
+  <video
+    controls
+    style="
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--gris-2);
+      display: block;
+      margin: 0 auto;
+    "
+  >
+    <source src="videos/dem.mp4" type="video/mp4">
+  </video>
+</div>
+
+
+<br><br>    
+  <footer>
+    <p>Museo de Arte · Oskar Meyibo &nbsp;·&nbsp; Todos los derechos reservados &nbsp;·&nbsp; 2026</p>
+  <p style="margin-top:0.5rem; font-size:0.65rem; opacity:0.6;">
+  Las obras, imágenes y contenido de este sitio son propiedad intelectual 
+  de los herederos de Juan Carlos González Trinidad (Oskar Meyibo). 
+  Queda prohibida su reproducción, distribución o uso comercial 
+  sin autorización expresa.
+</p>
+  </footer>
+
+
+
+      <script src="js/lightbox.js"></script>
+</body>
+</html>

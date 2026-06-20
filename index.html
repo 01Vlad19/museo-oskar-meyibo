@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Museo de Arte Juan Carlos G.T</title>
+  <style>
+    /* ─── Variables de color y tipografía ─── */
+    :root {
+      --negro:    #0a0a0a;
+      --carbon:   #141414;
+      --gris-1:   #1e1e1e;
+      --gris-2:   #2e2e2e;
+      --gris-muted: #888;
+      --blanco:   #f5f2ec;
+      --dorado:   #c9a96e;
+      --dorado-t: rgba(201,169,110,0.15);
+      --fuente-display: 'Cormorant Garamond', Georgia, serif;
+      --fuente-body:    'Inter', system-ui, sans-serif;
+    }
+
+    /* ─── Reset básico ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--negro);
+      color: var(--blanco);
+      font-family: var(--fuente-body);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ─── Google Fonts: carga las dos tipografías ─── */
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap');
+
+    /* ─── Barra de navegación ─── */
+    nav {
+      position: fixed;         /* se queda arriba siempre */
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(10px);     /* efecto cristal */
+      border-bottom: 1px solid var(--gris-2);
+    }
+
+    .nav-logo {
+      font-family: var(--fuente-display);
+      font-size: 1.2rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dorado);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gris-muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--blanco); }
+
+    /* ─── HERO: sección principal de portada ─── */
+    .hero {
+      height: 100vh;             /* ocupa toda la pantalla */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Fondo: gradiente + patrón de cuadrícula sutil */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(10,10,10,0) 50%, var(--negro) 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.03) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.03) 80px);
+    }
+
+    /* Círculo de luz dorada detrás del título (el "signature element") */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -55%);
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--dorado-t) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Edicion de tamano de las fuentes */
+    .hero-eyebrow {
+      font-size: 0.95rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-family: var(--fuente-display);
+      font-size: clamp(3.5rem, 8vw, 7rem);  /* tamaño responsive */
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--blanco);
+      position: relative;
+      z-index: 1;
+      max-width: 14ch;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--dorado);
+    }
+
+    .hero-subtitle {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: var(--gris-muted);
+      letter-spacing: 0.05em;
+      max-width: 42ch;
+      position: relative;
+      z-index: 1;
+    }
+
+
+    /* PARTE DE CTA */
+    .hero-cta {
+      margin-top: 3rem;
+      display: inline-block;
+      padding: 0.85rem 2.4rem;
+      border: 1px solid var(--dorado);
+      color: var(--dorado);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: background 0.3s, color 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-buttons-container {
+    display: flex;            /* Activa el modo Flexbox */
+    flex-direction: row;      /* Alinea los elementos en horizontal (fila) */
+    justify-content: center;  /* Centra los botones horizontalmente en la pantalla */
+    align-items: center;      /* Los centra verticalmente entre ellos */
+    gap: 20px;                /* Controla la separación/espacio entre cada botón */
+    margin-top: 30px;         /* Separa el bloque de botones del párrafo de arriba */
+    }
+
+    .hero-cta:hover {
+      background: var(--dorado);
+      color: var(--negro);
+    }
+
+    /* ─── Sección de obras destacadas ─── */
+    .section-label {
+      font-size: 1.2rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 2.5rem;
+    }
+
+    .destacadas {
+      padding: 6rem 3rem;
+      background: var(--carbon);
+    }
+
+    .destacadas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Tarjeta de obra */
+    .obra-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid var(--gris-2);
+    }
+
+    .obra-card img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;       /* recorta sin deformar */
+      display: block;
+      transition: transform 0.6s ease, filter 0.6s ease;
+      filter: grayscale(30%);  /* tono artístico sutil */
+    }
+
+    .obra-card:hover img {
+      transform: scale(1.05);
+      filter: grayscale(0%);
+    }
+
+    /* Info que aparece al hacer hover */
+    .obra-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.5rem;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      transform: translateY(15%);
+      transition: transform 0.4s ease;
+    }
+
+    .obra-card:hover .obra-info { transform: translateY(0); }
+
+    .obra-titulo {
+    font-family: var(--fuente-display);
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--blanco);
+    /* Sombra de respaldo sutil para separar las letras de fondos muy claros */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); 
+    }
+
+    .obra-artista {
+    font-size: 0.75rem;
+    color: var(--dorado);
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ─── Footer mínimo ─── */
+    footer {
+      text-align: center;
+      padding: 3rem;
+      background: var(--negro);
+      border-top: 1px solid var(--gris-2);
+      font-size: 0.75rem;
+      color: var(--gris-muted);
+      letter-spacing: 0.1em;
+    }
+  </style>f
+</head>
+<body>
+
+  <!-- NAVEGACIÓN -->
+  <nav>
+    <span class="nav-logo">Museo &middot; OskarMeyibo</span>
+    <ul class="nav-links">
+      <li><a href="galeria.html">Galería</a></li>
+      <li><a href="coleccion.html">Colección</a></li>
+      <li><a href="acerca.html">BIOGRAFÍA</a></li>
+    </ul>
+  </nav>
+
+  <!-- HÉROE / PORTADA -->
+  <section class="hero">
+    <p class="hero-eyebrow">Bienvenido al museo Ilnamiquiliztli ipan Juan Carlos González Trinidad</p>
+    <h1 class="hero-title">Arte que <em>trasciende</em> el tiempo</h1>
+    <p class="hero-subtitle">
+      Una colección de obras que exploran la forma, las emociones, la luz, el silencio y el alma
+    </p>
+    <div class="hero-buttons-container">
+        <a href="galeria.html" class="hero-cta">Galería</a>
+        <a href="coleccion.html" class="hero-cta">Coleccion</a>
+        <a href="acerca.html" class="hero-cta">Sobre Oskar Meyibo</a>
+    </div>
+  </section>
+
+
+
+
+  <!-- OBRAS DESTACADAS -->
+  <section class="destacadas" id="galeria">
+    <p class="section-label" style="text-align:center">Obras destacadas</p>
+
+    <div class="destacadas-grid">
+
+      <!-- Obra 1: imagen de Unsplash (arte abstracto) -->
+      <div class="obra-card">
+        <img
+          src="img/uno.jpeg"
+          alt="El Vuelo del Espíritu Helado"\
+          class="lightbox-img"
+        />
+        <div class="obra-info">
+          <p class="obra-titulo">El Vuelo del Espíritu Helado
+</p>
+          <p class="obra-artista">OskarMeyibo</p>
+        </div>
+      </div>
+
+      <!-- Obra 2 -->
+      <div class="obra-card">
+        <img
+          src="img/dos.jpeg"
+          alt="El Despertar del Sentido"
+          class="lightbox-img"
+        />
+        <div class="obra-info">
+          <p class="obra-titulo">El Despertar del Sentido</p>
+          <p class="obra-artista">OskarMeyibo</p>
+        </div>
+      </div>
+
+      <!-- Obra 3 -->
+      <div class="obra-card">
+        <img
+          src="img/tres.jpeg"
+          alt="El Guardián del Tótem"
+          class="lightbox-img"
+
+        />
+        <div class="obra-info">
+          <p class="obra-titulo">El Guardián del Tótem</p>
+          <p class="obra-artista">OskarMeyibo</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA -->
+  <footer>
+    <p>Museo · OskarMeyibo &nbsp;·&nbsp; Todos los derechos reservados &nbsp;·&nbsp; 2026</p>
+  <p style="margin-top:0.5rem; font-size:0.65rem; opacity:0.6;">
+  Las obras, imágenes y contenido de este sitio son propiedad intelectual 
+  de los herederos de Juan Carlos González Trinidad (OskarMeyibo). 
+  Queda prohibida su reproducción, distribución o uso comercial 
+  sin autorización expresa.
+</p>
+  </footer>
+
+
+<script src="js/lightbox.js"></script>
+</body>
+</html>
